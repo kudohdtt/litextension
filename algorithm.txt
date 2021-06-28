@@ -1,0 +1,29 @@
+1. 
+arr_input = '123456789'
+arrs = ['4','5','6','7','8','9']
+signs = ['-', '-', '-', '-', '+', '-']
+new_arr = '123'
+for i in range(0,6):
+    new_arr = new_arr + ' {} {}'.format(signs[i], arrs[i])
+# new_arr = "{}".format(' + '.join(arr_input))
+print(new_arr)
+
+2.
+def func1(x, y):
+    step = 0
+    while( y/x >= 2 ):
+        x = x*2
+        step += 1
+    if x == y :
+        return step
+    else :
+        x = x*2
+        step += 1
+        while(x>y):
+            x-=1
+            step += 1
+    return step
+x = 4
+y = 6
+
+print(func1(x,y))
