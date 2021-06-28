@@ -1,12 +1,27 @@
 1. 
-arr_input = '123456789'
-arrs = ['4','5','6','7','8','9']
-signs = ['-', '-', '-', '-', '+', '-']
-new_arr = '123'
-for i in range(0,6):
-    new_arr = new_arr + ' {} {}'.format(signs[i], arrs[i])
-# new_arr = "{}".format(' + '.join(arr_input))
-print(new_arr)
+arr_input = ['2','3','4','5','6','7','8','9']
+arrs = [None]*8
+res = []
+signs = ['-','+','']
+
+def cal(arrs, arr_input):
+    res = '1'
+    for i in range(0, len(arrs)):
+        res = res + '{}{}'.format(arrs[i], arr_input[i])
+    return (res,eval(res))
+
+def funct1(arrs, signs, res, n=0):
+    if len(arrs) == n :
+        return 0
+    for s in signs:
+        arrs[n] = s
+        if None not in arrs:
+            res_str, res_num = cal(arrs, arr_input)
+            if res_num == 100:
+                print('Bieu thuc dau ra la:',res_str)
+        funct1(arrs, signs, res, n+1)
+
+funct1(arrs, signs, res)
 
 2.
 def func1(x, y):
