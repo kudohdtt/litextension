@@ -1,0 +1,228 @@
+1.login wordpress va lay name user vua login
+
+#use requests
+
+import requests
+wp_login = 'http://45.79.43.178/source_carts/wordpress/wp-login.php'
+wp_admin = 'http://45.79.43.178/source_carts/wordpress/wp-admin/'
+username = 'admin'
+password = '123456aA'
+
+with requests.Session() as s:
+    headers1 = { 'Cookie':'wordpress_test_cookie=WP Cookie check' }
+    datas={ 
+        'log':username, 'pwd':password, 'wp-submit':'Log In', 
+        'redirect_to':wp_admin, 'testcookie':'1'  
+    }
+    s.post(wp_login, headers=headers1, data=datas)
+    resp = s.get(wp_admin)
+    # print(resp.text)
+
+try: 
+    from BeautifulSoup import BeautifulSoup
+except ImportError:
+    from bs4 import BeautifulSoup
+html = resp.text
+parsed_html = BeautifulSoup(html)
+print (parsed_html.body.find('span', attrs={'class':'display-name'}).text)
+
+
+#use selenium
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time 
+
+def wp_login( website , username , password ):
+    driver = webdriver.Chrome(r'C:\Program Files\Internet Explorer\iexplore.exe')
+
+    driver.get( website )
+
+
+    user_field = driver.find_element_by_id('user_login')
+    user_field.send_keys( username )
+
+    pass_field = driver.find_element_by_id('user_pass')
+    pass_field.send_keys( password )
+
+    submit_button = driver.find_element_by_id('wp-submit')
+
+    submit_button.submit()
+    # driver.get('http://45.79.43.178/source_carts/wordpress/wp-admin/')
+
+    time.sleep(10)
+
+    driver.quit()
+
+wp_login( 'http://45.79.43.178/source_carts/wordpress/wp-login.php' , 'admin', "123456aA")
+
+
+# from selenium import webdriver
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
+# import time 
+# from seleniumrequests import Chrome
+
+# def wp_login( website , username , password ):
+#     wp_admin = 'http://45.79.43.178/source_carts/wordpress/wp-admin/'
+#     webdriver = Chrome(r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')
+#     response = webdriver.request('POST', 'http://45.79.43.178/source_carts/wordpress/wp-login.php', data={
+#         'log':username, 'pwd':password, 'wp-submit':'Log In', 
+#         'redirect_to':wp_admin, 'testcookie':'1'  
+#     })
+#     print(response.find_element_by_class_name('display-name'))
+
+
+
+# wp_login( 'http://45.79.43.178/source_carts/wordpress/wp-login.php' , 'admin', "123456aA")
+
+2. Mysql
+
+import mysql.connector
+import pandas as pd
+import datetime
+import math, numpy
+# tạo đối tượng connection
+
+def drop_table(name_table, myconn):
+	cur = myconn.cursor()   
+	try:
+		cur.execute('drop table customer')
+		return 1
+	except:
+		print('drop table error')
+		return 0
+
+def access_db(name_db):
+	try:
+		myconn = mysql.connector.connect(host = "localhost", user = "root",passwd = "12345678", database = name_db)
+		return myconn
+	except:
+		print('connect error')
+		return 0
+
+def create_table(create_td, cur):
+	try:  
+		dbs = cur.execute(create_td)
+		return 1
+	except:
+		print('create table error')
+		return 0
+
+
+
+def insert_customer(sql, customer_info_path, myconn):
+	# clear table for insert test
+	cur.execute('delete from customer')
+
+	customer_info = pd.read_csv(customer_info_path)
+# 	print(customer_info)
+	for i in range(0, len(customer_info)):
+		customerid = customer_info['customerid'][i].item()
+		firstname = customer_info['firstname'][i]
+		lastname = customer_info['lastname'][i]
+		companyname = customer_info['companyname'][i]
+		billingaddress1 = customer_info['billingaddress1'][i]
+		billingaddress2 = customer_info['billingaddress2'][i]
+		city = customer_info['city'][i]
+		state = customer_info['state'][i]
+		postalcode = customer_info['postalcode'][i]
+		phonenumber = customer_info['phonenumber'][i]
+		country = customer_info['country'][i]
+		emailaddress = customer_info['emailaddress'][i]
+		createddate = datetime.datetime.strptime(customer_info['createddate'][i], '%m/%d/%Y %H:%M')
+		# createddate = createddate.strftime("%Y-%m-%d %H:%M:%S").astype(int)
+		val = (customerid, firstname, lastname,companyname, billingaddress1, billingaddress2, city, state, postalcode, phonenumber, country, emailaddress, createddate)
+		for j in range(0, len(val)):
+			if isinstance(val[j], float) and numpy.isnan(val[j]) :
+				y = list(val)
+				y[j] = None
+				val = tuple(y)
+		print(val)
+		# cur.execute(sql, val)
+		try:
+			cur.execute(sql, val)
+			print(cur.rowcount, "record inserted " + str(i))
+		except:
+			print('error at line' + str(i))
+
+		myconn.commit()
+	return 0
+
+customer_info_path = r'D:\Tu\litextension\customer.csv'
+
+# tạo đối tượng cursor
+myconn = access_db('db_lite')
+cur = myconn.cursor()   
+# remove table for cearte table test
+# drop_table('customer', myconn)
+
+create_td = 'create table customer (\
+customerid int(11) primary key,\
+firstname varchar(20) NOT NULL, \
+lastname varchar(20) ,\
+companyname varchar(30),\
+billingaddress1 varchar(40),\
+billingaddress2 varchar(40),\
+city varchar(20),\
+state varchar(20),\
+postalcode varchar(20),\
+phonenumber varchar(20),\
+country varchar(20),\
+emailaddress varchar(40) NOT NULL,\
+createddate datetime NOT NULL\
+)'
+
+create_table(create_td, cur)
+
+sql = "INSERT INTO customer (customerid, firstname, lastname, companyname, billingaddress1, billingaddress2, city, state, postalcode, phonenumber, country, emailaddress, createddate) \
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+# data for insert test
+# val = ("69906", "justin", "arsenault", "", "732 eastford rd", "", "Southbridge", "MA", "1550", "United States", "508-735-9694", "hondarider2508@gmail.com", "10/1/2019 6:47")
+insert_customer(sql, customer_info_path, myconn)
+myconn.close()
+
+3. crawl customer data
+
+import requests
+import pandas as pd
+
+def crawl_customer_info(APIkey, pw, name_store, outfilepath):
+
+	url = "{0}:{1}@{2}.myshopify.com/admin/api/2021-04/customers.json".format(APIkey, pw, name_store)
+	response = requests.get(url)
+	
+	if response.status_code == 200 :
+		data = response.json()
+		# print(data)
+		customer_list = data['customers']
+		res = []
+		variables = ['id', 'email', 'accepts_marketing', 'created_at', 'updated_at', 'first_name', 'last_name', 'orders_count', 'state']
+		if len(customer_list) > 0 :
+			for c in customer_list:
+				arr1 = []
+				for v in variables:
+					arr1.append(c[v])
+				# and some other variables
+				res.append(arr1)
+		# print(res)
+		df = pd.DataFrame(res, columns=variables)
+		# print(df)
+		try :
+			df.to_csv(outfilepath)
+			print('crwal successful ! ', outfilepath)
+			return 1
+		except:
+			return 0
+
+APIkey = r'https://5fab59b6b5658b0ecb9d1fc3058d250e'
+pw = r'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'
+name_store = r'bigstore02'
+outfilepath = r'D:\Tu\litextension\git\litextension\customers.csv'
+
+status = crawl_customer_info(APIkey, pw, name_store, outfilepath)

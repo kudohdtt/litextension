@@ -1,0 +1,3 @@
+,id,email,accepts_marketing,created_at,updated_at,first_name,last_name,orders_count,state
+0,5308782575798,abcd@gmail.com,True,2021-06-29T11:10:41+07:00,2021-06-29T11:10:41+07:00,B,customer,0,disabled
+1,5308738699446,abc@gmail.com,True,2021-06-29T10:15:02+07:00,2021-06-29T10:15:02+07:00,A,customer,0,disabled
