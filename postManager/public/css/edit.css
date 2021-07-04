@@ -1,0 +1,47 @@
+
+#bt-show {
+  background:#0085cd;
+  color: white; 
+  border: none;
+}
+
+#header-container{
+  padding-bottom: 15px;
+}
+
+.edit-title{
+  display: inline-block;
+  width: 200px;
+}
+
+.ln1{
+  font-weight: bold;
+  background: #d2d2d273;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #d2d2d2;
+}
+
+.ln2{
+  font-weight: bold;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+
+.bt-e{
+  background: white;
+  border-radius : 4px;
+  margin-right: 2px;
+  margin-left: 2px;
+  width: 48px;
+  height: 28px;
+  border: 1px solid #d2d2d2;
+}
+button:hover{
+  cursor: pointer;
+}
+img{
+  height: 200px;
+}
